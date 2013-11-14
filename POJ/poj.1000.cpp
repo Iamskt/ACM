@@ -6,4 +6,4 @@ int main()
     while(cin>>A>>B)
         cout<<A+B<<endl; 
     return 0;
-    }
+}
