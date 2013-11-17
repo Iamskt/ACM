@@ -1,4 +1,5 @@
 /*
+ * this problem is not good, don't recommend
  * Graph 
  * construct a reverse graph, do a dijkstra
  * don't do a forward graph and do it for many time, and it is not a useful algorithm
