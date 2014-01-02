@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	<package name="Action" namespace="/ajax" extends="json-default">
+		<action name="login" class="org.njust.Action.loginAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="Verify" class="org.njust.Action.VerifyAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="logout" class="org.njust.Action.logoutAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="setPassword"
+			class="org.njust.Action.SetPasswordAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="personinfo" class="org.njust.Action.personinfoAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="Officeinfo"
+			class="org.njust.Action.officeinfoAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="Workexp" class="org.njust.Action.WorkexpAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="person" class="org.njust.Action.personAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+			<result type="json" name="Teacherinfomation">
+			</result>
+		</action>
+		<action name="Declaretion"
+			class="org.njust.Action.DeclaretionAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="form" class="org.njust.Action.formAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="xueke" class="org.njust.Action.xuekeAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="xuewei" class="org.njust.Action.xueweiAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="delwuewei"
+			class="org.njust.Action.delwueweiAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="Delworkexp"
+			class="org.njust.Action.delworkexpAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="partjob" class="org.njust.Action.partjobAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="delpartjob"
+			class="org.njust.Action.delpartjobAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="honor" class="org.njust.Action.honorAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="delhonor" class="org.njust.Action.delhonorAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="delxueke"
+			class="org.njust.Action.delxuekeAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="AllDeclaretion"
+			class="org.njust.Action.AllDeclaretionAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="User" class="org.njust.Action.UserAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="AddUser" class="org.njust.Action.AdduserAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="ExportUser"
+			class="org.njust.Action.ExportUserAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="DelUser" class="org.njust.Action.DelUserAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		
+		<action name="DelDeclaretion"
+			class="org.njust.Action.DelDeclaretionAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="saveUser"
+			class="org.njust.Action.saveUserAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="TempUser"
+			class="org.njust.Action.TempUserAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="Userinfo" class="org.njust.Action.Userinfo">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="Exportform"
+			class="org.njust.Action.ExportformAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action>
+		<action name="gainDeclaretion"
+			class="org.njust.Action.gainDeclaretionAction">
+			<result type="json">
+				<param name="root">jsonData</param>
+			</result>
+		</action></package>
+</struts>    

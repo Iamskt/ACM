@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <!--
+      Charisma v1.0.0
+
+      Copyright 2012 Muhammad Usman
+      Licensed under the Apache License v2.0
+      http://www.apache.org/licenses/LICENSE-2.0
+
+      http://usman.it
+      http://twitter.com/halalit_usman
+   -->
+   <meta charset="utf-8">
+   <title>学术论文列表</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="description" content="Charisma, a fully featured, responsive, HTML5, Bootstrap admin template.">
+   <meta name="author" content="Muhammad Usman">
+
+   <!-- The styles -->
+   <link id="bs-css" href="css/bootstrap-cerulean.css" rel="stylesheet">
+   <style type="text/css">
+      body {
+         padding-bottom: 40px;
+      }
+      .sidebar-nav {
+         padding: 9px 0;
+      }
+   </style>
+   <link href="css/bootstrap-responsive.css" rel="stylesheet">
+   <link href="css/charisma-app.css" rel="stylesheet">
+   <link href="css/jquery-ui-1.8.21.custom.css" rel="stylesheet">
+   <link href='css/fullcalendar.css' rel='stylesheet'>
+   <link href='css/fullcalendar.print.css' rel='stylesheet'  media='print'>
+   <link href='css/chosen.css' rel='stylesheet'>
+   <link href='css/uniform.default.css' rel='stylesheet'>
+   <link href='css/colorbox.css' rel='stylesheet'>
+   <link href='css/jquery.cleditor.css' rel='stylesheet'>
+   <link href='css/jquery.noty.css' rel='stylesheet'>
+   <link href='css/noty_theme_default.css' rel='stylesheet'>
+   <link href='css/elfinder.min.css' rel='stylesheet'>
+   <link href='css/elfinder.theme.css' rel='stylesheet'>
+   <link href='css/jquery.iphone.toggle.css' rel='stylesheet'>
+   <link href='css/opa-icons.css' rel='stylesheet'>
+   <link href='css/uploadify.css' rel='stylesheet'>
+   <link href='css/temp.css' rel='stylesheet'>
+   <!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
+   <!--[if lt IE 9]>
+   <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+   <![endif]-->
+
+   <!-- The fav icon -->
+   <link rel="shortcut icon" href="img/favicon.ico">
+   <script src="js/jquery.js"></script>
+   <script src="js/page.js"></script>
+   <script src="js/Declare.js"></script>
+   <script src="js/test.js"></script>
+   <script type="text/javascript">
+   $(document).ready(function() {
+      var p1;
+      $("#root1").hide();
+      $("#root2").hide();
+      var table = $("#declaretion").dataTable({
+         "sDom" : "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span12'i><'span12 center'p>>",
+         "sPaginationType" : "bootstrap",
+         "oLanguage" : {
+            "sLengthMenu" : "_MENU_ records per page"
+         }
+      });
+      Edit(table);
+      Delete(table);
+      Export(table);
+      close();
+      $.ajax({
+         type: "post",
+         url:  "ajax/AllDeclaretion.action",
+         dataType: "json",
+         success: 
+         function(jsondata) {
+            var obj = $.parseJSON(jsondata);
+            p1 = obj;
+            if (obj[0].status == false) {
+               window.location.href = "login.html";
+            } else {
+               $("#status").text(obj[0].name);
+               dealroot(obj[0].root);
+               AddDeclaretion(obj[0].declaretion, table, obj[0].name);
+            }
+         }
+      });
+   });
+   function AddDeclaretion(obj, table, name) {
+      var size = obj.length;
+      var tmp = $("#declaretion tbody");
+      for (var i = 0; i < size; i ++) {
+         var node = button();
+         table.fnAddData([
+            obj[i].cname,
+            name,
+            obj[i].putTime,
+            node
+         ]);
+         var v1 = $("#declaretion tbody").find("tr").eq(i);
+         v1.attr("id", obj[i].id);
+      }
+   }
+   function button() {
+      var Addnode = "<button class=\"btn btn-success\">";
+      Addnode = Addnode + "<i class=\"icon-edit icon-white\">";
+      Addnode = Addnode + "</i>\nView\n";
+      Addnode = Addnode + "</button>";
+      Addnode = Addnode + "&nbsp&nbsp";
+      Addnode = Addnode + "<button class=\"btn btn-danger\">";
+      Addnode = Addnode + "<i class=\"icon-trash icon-white\"></i>";
+      Addnode = Addnode + "</i>\nDelete\n";
+      Addnode = Addnode + "</button>&nbsp&nbsp";
+      Addnode = Addnode + "<button class=\"btn btn-warning\">导出论文</button>";
+      return Addnode;
+   }
+   function Edit(table) {
+
+      $("button[class='btn btn-success']").live("click", function() {
+         var node = $(this).parent().parent();
+         var id = node.attr("id");
+         var params = 
+         {
+            pid : id
+         };
+         $.ajax({
+            type: "post",
+            url:  "ajax/gainDeclaretion.action",
+            dataType: "json",
+            data : params,
+            success : 
+               function (jsonData) {
+                  var obj = $.parseJSON(jsonData);
+                  $("#myModal1").modal("show");
+                  pane1(obj);
+                  pane2(obj[0].declareauthor);
+                  pane3(obj);
+               }
+         });
+      })
+   }
+   function pane1(obj) {
+      $("#name").text(obj[0].name);
+      $("#teacherId").text(obj[0].user.username);
+      $("#department").text(obj[0].declaretion.department);
+      $("#telephone").text(obj[0].declaretion.telephone);
+      $("#CName").text(obj[0].declaretion.cname);
+      $("#EName").text(obj[0].declaretion.ename);
+      $("#PaperID").text(obj[0].declaretion.paperId);
+   }
+   function pane2(obj) {
+      var table = $("#authorinfo tbody");
+      for (var i = 0; i < obj.length; i ++) {
+         var tr = "<tr>";
+         tr += "<td>" + obj[i].authorname + "</td>";
+         tr += "<td>" + obj[i].department + "</td>";
+         if (obj[i].level == 0) {
+            tr += "<td>" + "教授" + "</td>";
+         } else {
+            tr += "<td>" + "研究生" + "</td>";
+         }
+         tr += "</tr>";
+         table.append(tr);
+      }
+   }
+   function pane3(obj) {
+      $("#CCName").text(obj[0].declaretion.cjname);
+      $("#CEName").text(obj[0].declaretion.ejname);
+      //$("#CLevel").text(obj[i].declaretion);
+      if (obj[0].declaretion.clevel == 0) {
+         $("#CLevel").text("国内刊物");
+      } else {
+         $("#CLevel").text("国外刊物");
+      }
+      $("#ConCName").text(obj[0].declaretion.ccname);
+      $("#ConEName").text(obj[0].declaretion.ecname);
+      if (obj[0].declaretion.clevel == 0) {
+         $("#ConLevel").text("国内会议");
+      } else {
+         $("#ConLevel").text("国外会议");
+      }
+      $("#date").text(obj[0].declaretion.putTime);
+      $("#Volume").text(obj[0].declaretion.volume);
+      $("#Period").text(obj[0].declaretion.period);
+      $("#StPage").text(obj[0].declaretion.stPage);
+      $("#EnPage").text(obj[0].declaretion.edPage);
+   }
+   function Export(table) {
+      $("button[class='btn btn-warning']").live("click", function() {
+         var node = $(this).parent().parent();
+         var id = node.attr("id");
+         var params = 
+         {
+            pid : id
+         };
+         $.ajax({
+            type: "post",
+            url:  "ajax/Exportform.action",
+            dataType: "json",
+            data : params,
+            success :
+            function (jsonData) {
+               var obj = $.parseJSON(jsonData);
+               window.location.href = obj[0].path;
+            }
+         });
+      }) 
+   }
+   function Delete(table) {
+      $("button[class='btn btn-danger']").live("click", function() {
+         var node = $(this).parent().parent();
+         var v1 = node.attr("id");
+         var params = 
+         {
+            declaretionid : v1
+         };
+         $.ajax({
+            type: "post",
+            url:  "ajax/DelDeclaretion.action",
+            dataType: "json",
+            data : params,
+            success :
+            function (jsondata) {
+               table.fnDeleteRow(node);
+               $("#dialog1").modal("show");
+            }
+         });
+      })
+   }
+   function close() {
+      $("#close").click(function() {
+         $("#author tbody").empty();
+      })
+   }
+   </script>
+</head>
+
+<body>
+   <!-- topbar starts -->
+   <div class="navbar">
+      <div class="navbar-inner">
+         <div class="container-fluid">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".top-nav.nav-collapse,.sidebar-nav.nav-collapse">
+               <span class="icon-bar"></span>
+               <span class="icon-bar"></span>
+               <span class="icon-bar"></span>
+            </a>
+            <a class="brand" style="width: 200px" href="#">
+               <span> <font color="#D4FFAA" face="华文楷体" >人员信息管理系统</font>
+               </span>
+            </a>
+            <div class="btn-group pull-right" >
+               <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"> <i class="icon-user"></i>
+                  <span class="hidden-phone" id="status"></span>
+                  <span class="caret"></span>
+               </a>
+               <ul class="dropdown-menu">
+                  <li>
+                     <a href="index.html">Profile</a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                     <a href="login.html">Logout</a>
+                  </li>
+               </ul>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- topbar ends -->
+   <div class="container-fluid">
+      <div class="row-fluid">
+         <!-- left menu starts -->
+         <div class="span2 main-menu-span">
+            <div class="well nav-collapse sidebar-nav">
+               <ul class="nav nav-tabs nav-stacked main-menu">
+                  <li class="nav-header hidden-tablet">Main</li>
+                  <li>
+                     <a class="ajax-link" href="index.html"> <i class="icon-home"></i>
+                        <span class="hidden-tablet">个人信息</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a class="ajax-link" href="Declaretion.html">
+                        <i class="icon-eye-open"></i>
+                        <span class="hidden-tablet">查看学术论文</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a class="ajax-link" href="form.html">
+                        <i class="icon-edit"></i>
+                        <span class="hidden-tablet">申报学术论文</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a class="ajax-link" href="SetPassword.html">
+                        <i class="icon-list-alt"></i>
+                        <span class="hidden-tablet">修改密码</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a class="ajax-link" href="User.html" id="root1">
+                        <i class="icon-list"></i>
+                        <span class="hidden-tablet">用户列表</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a class="ajax-link" href="AllDeclaretion.html" id="root2">
+                        <i class="icon-list"></i>
+                        <span class="hidden-tablet">论文列表</span>
+                     </a>
+                  </li>
+               </ul>
+            </div>
+            <!--/.well --> 
+         </div>
+         <!--/span-->
+         <!-- left menu ends -->
+
+         <noscript>
+            <div class="alert alert-block span10">
+               <h4 class="alert-heading">Warning!</h4>
+               <p>
+                  You need to have
+                  <a href="http://en.wikipedia.org/wiki/JavaScript" target="_blank">JavaScript</a>
+                  enabled to use this site.
+               </p>
+            </div>
+         </noscript>
+
+         <div id="content" class="span10">
+            <!-- content starts -->
+            <div>
+               <ul class="breadcrumb">
+                  <li>
+                     <a href="index.html">Home</a>
+                     <span class="divider">/</span>
+                  </li>
+                  <li>
+                     <a href="#">学术论文列表</a>
+                  </li>
+               </ul>
+            </div>
+
+            <div class="row-fluid sortable">
+               <div class="box span12">
+                  <div class="box-header well" data-original-title>
+                     <h2>
+                        <i class="icon-edit"></i>
+                        学术论文列表
+                     </h2>
+                     <div class="box-icon">
+                        <a href="#" class="btn btn-close btn-round">
+                           <i class="icon-remove"></i>
+                        </a>
+                     </div>
+                  </div>
+
+                  <div class="box-content">
+                     <legend> <font style="font-weight: bold">&nbsp&nbsp&nbsp 学术论文列表</font>
+                     </legend>
+                     <table id="declaretion" class="table table-striped table-bordered bootstrap-datatable" style="width: 100%">
+                        <thead>
+                           <th>论文题目</th>
+                           <th>作者</th>
+                           <th style="width: 200px">提交时间</th>
+                           <th style="width: 300px">操作</th>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+               <!--/span--> 
+            </div>
+            <!--/row-->
+
+            <!-- content ends --> 
+         </div>
+         <!--/#content.span10--> 
+      </div>
+      <!--/fluid-row-->
+   </div>
+   <hr>
+
+   <div class="modal1 hide fade" id="myModal1">
+      <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" id="close">×</button>
+         <span id=""></span>
+      </div>
+      <div class="modal-body">
+         <ul class="nav nav-tabs" id="myTab">
+            <li class="active">
+               <a href="#p1">申报人信息</a>
+            </li>
+            <li>
+               <a href="#p2">论文信息</a>
+            </li>
+            <li>
+               <a href="#p3">发表刊物信息</a>
+            </li>                 
+         </ul>
+         <div id="myTabContent" class="tab-content">
+            <div class="tab-pane active" id="p1">
+               <form class="form-horizontal">
+                  <fieldset>
+                     <div class="control-group">
+                        <label class="control-label">姓名</label>
+                        <div class="controls">
+                           <span class="input-medium uneditable-input" id="name">
+                           </span>
+                        </div>
+                        <br>
+                        <label class="control-label">工资号</label>
+                        <div class="controls">
+                           <span class="input-medium uneditable-input" id="teacherId">
+                           </span>
+                        </div>
+                        <br>
+                        <label class="control-label">单位</label>
+                        <div class="controls">
+                           <span class="input-medium focused" id="department"/>
+                        </div>
+                        <br>
+                        <label class="control-label">电话</label>
+                        <div class="controls">
+                           <span class="input-medium focused" id="telephone"/>
+                        </div>
+                        <br>
+                        <label class="control-label">中文名称</label>
+                        <div class="controls">
+                           <span class="input-medium focused" id="CName"/>
+                        </div>
+                        <br>
+                        <label class="control-label">英文名字</label>
+                        <div class="controls">
+                           <span class="input-medium focused" id="EName"/>
+                        </div>
+                        <br>
+                        <label class="control-label">校内编号</label>
+                        <div class="controls">
+                           <span class="input-medium focused" id="PaperID"/>
+                        </div>
+                     </div>
+                  </fieldset>
+               </form>
+            </div>
+            <div class="tab-pane" id="p2">
+            <form class="form-horizontal">
+               <table id="authorinfo" class="table table-striped table-bordered" style="width: 600px">
+                  <thead>
+                     <th>作者姓名</th>
+                     <th style="width: 100px">单位</th>
+                     <th>职务</th>
+                  </thead>
+                  <tbody></tbody>
+               </table>
+            </form>
+         </div>
+         <div class="tab-pane" id="p3">
+            <form class="form-horizontal">
+               <fieldset>
+               <div class="control-group">
+                  <label class="control-label">刊物名称(中)</label>
+                  <div class="controls">
+                     <span class="input-medium uneditable-input" id="CCName"/>
+                  </div>
+                  <br>
+                  <label class="control-label">刊物名称(英)</label>
+                  <div class="controls">
+                     <span class="input-medium uneditable-input" id="CEName"/>
+                  </div>
+                  <br>
+                  <label class="control-label" for="CLevel">刊物级别&nbsp</label>
+                  <div class="controls">
+                     <span class="input-medium uneditable-input" id="CLevel"/>
+                  </div>
+                  <br>
+                  <label class="control-label">会议名称(中)</label>
+                  <div class="controls">
+                     <span class="input-medium uneditable-input" id="ConCName"/>
+                  </div>
+                  <br>
+                  <label class="control-label">会议名称(英)</label>
+                  <div class="controls">
+                     <span class="input-medium uneditable-input" id="ConEName"/>
+                  </div>
+                  <br>
+                  <label class="control-label" for="ConLevel">会议级别&nbsp</label>
+                  <div class="controls">
+                     <span class="input-medium uneditable-input" id="ConLevel"/>
+                  </div>
+                  <br>
+                  <label class="control-label" for="date">时间</label>
+                  <div class="controls">
+                     <span class="input-medium uneditable-input" id="date"/>
+                  </div>
+                  <br>
+                  <label class="control-label">卷</label>
+                  <div class="controls">
+                     
+                     <span class="input-small uneditable-input" id="Volume"/>
+                     
+                  </div>
+                  <label class="control-label">期</label>
+                  <div class="controls">
+                     
+                     <span class="input-small uneditable-input" id="Period"/>
+                     
+                  </div>
+                  <label class="control-label">至</label>
+                  <div class="controls">
+                     
+                     <span class="input-small uneditable-input" id="StPage"/>
+                     
+                  </div>
+                  <label class="control-label">页</label>
+                  <div class="controls">
+                     
+                     <span class="input-small uneditable-input" id="EnPage"/>
+                     
+                  </div>
+               </div>
+               </fieldset>
+            </form>
+         </div>
+      </div>
+   </div>
+</div>
+
+
+<div class="modal hide fade" id="myModal">
+   <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal">×</button>
+      <h3>Settings</h3>
+   </div>
+   <div class="modal-body">
+      <p>Here settings can be configured...</p>
+   </div>
+   <div class="modal-footer">
+      <a href="#" class="btn" data-dismiss="modal">Close</a>
+      <a href="#" class="btn btn-primary">Save changes</a>
+   </div>
+</div>
+<div class="modal hide fade" id="dialog1">
+   <div class="modal-body">
+      <p>删除成功</p>
+   </div>
+   <div class="modal-footer">
+      <a href="#" class="btn" data-dismiss="modal">确定</a>
+   </div>
+</div>
+
+<!--/.fluid-container-->
+
+   <!-- external javascript
+   ================================================== -->
+   <!-- Placed at the end of the document so the pages load faster -->
+
+   <!-- jQuery -->
+   <script src="js/jquery-1.7.2.min.js"></script>
+   <!-- jQuery UI -->
+   <script src="js/jquery-ui-1.8.21.custom.min.js"></script>
+   <!-- transition / effect library -->
+   <script src="js/bootstrap-transition.js"></script>
+   <!-- alert enhancer library -->
+   <script src="js/bootstrap-alert.js"></script>
+   <!-- modal / dialog library -->
+   <script src="js/bootstrap-modal.js"></script>
+   <!-- custom dropdown library -->
+   <script src="js/bootstrap-dropdown.js"></script>
+   <!-- scrolspy library -->
+   <script src="js/bootstrap-scrollspy.js"></script>
+   <!-- library for creating tabs -->
+   <script src="js/bootstrap-tab.js"></script>
+   <!-- library for advanced tooltip -->
+   <script src="js/bootstrap-tooltip.js"></script>
+   <!-- popover effect library -->
+   <script src="js/bootstrap-popover.js"></script>
+   <!-- button enhancer library -->
+   <script src="js/bootstrap-button.js"></script>
+   <!-- accordion library (optional, not used in demo) -->
+   <script src="js/bootstrap-collapse.js"></script>
+   <!-- carousel slideshow library (optional, not used in demo) -->
+   <script src="js/bootstrap-carousel.js"></script>
+   <!-- autocomplete library -->
+   <script src="js/bootstrap-typeahead.js"></script>
+   <!-- tour library -->
+   <script src="js/bootstrap-tour.js"></script>
+   <!-- library for cookie management -->
+   <script src="js/jquery.cookie.js"></script>
+   <!-- calander plugin -->
+   <script src='js/fullcalendar.min.js'></script>
+   <!-- data table plugin -->
+   <script src='js/jquery.dataTables.min.js'></script>
+
+   <!-- chart libraries start -->
+   <script src="js/excanvas.js"></script>
+   <script src="js/jquery.flot.min.js"></script>
+   <script src="js/jquery.flot.pie.min.js"></script>
+   <script src="js/jquery.flot.stack.js"></script>
+   <script src="js/jquery.flot.resize.min.js"></script>
+   <!-- chart libraries end -->
+
+   <!-- select or dropdown enhancer -->
+   <script src="js/jquery.chosen.min.js"></script>
+   <!-- checkbox, radio, and file input styler -->
+   <script src="js/jquery.uniform.min.js"></script>
+   <!-- plugin for gallery image view -->
+   <script src="js/jquery.colorbox.min.js"></script>
+   <!-- rich text editor library -->
+   <script src="js/jquery.cleditor.min.js"></script>
+   <!-- notification plugin -->
+   <script src="js/jquery.noty.js"></script>
+   <!-- file manager library -->
+   <script src="js/jquery.elfinder.min.js"></script>
+   <!-- star rating plugin -->
+   <script src="js/jquery.raty.min.js"></script>
+   <!-- for iOS style toggle switch -->
+   <script src="js/jquery.iphone.toggle.js"></script>
+   <!-- autogrowing textarea plugin -->
+   <script src="js/jquery.autogrow-textarea.js"></script>
+   <!-- multiple file upload plugin -->
+   <script src="js/jquery.uploadify-3.1.min.js"></script>
+   <!-- history.js for cross-browser state change on ajax -->
+   <script src="js/jquery.history.js"></script>
+   <!-- application script for Charisma demo -->
+   <script src="js/charisma.js"></script>
+
+</body>
+</html>

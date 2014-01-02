@@ -1,0 +1,172 @@
+create table User(
+	id int(10) not null auto_increment,
+	username varchar(20),
+	password varchar(20) default '111111',
+	primary key(id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table SystemUser(
+	id int(10) not null,
+	primary key(id),
+	foreign key(id) references User(id)
+	on delete cascade 
+    on update cascade 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table AdminUser(
+	id int(10) not null,
+	Username varchar(20),
+	CollegeID int,
+	primary key(id),
+	foreign key(id) references User(id)
+	on delete cascade 
+    on update cascade 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table Teacher(
+	id int(10) not null,
+	UserName varchar(20),
+	CollegeID int,
+	Department varchar(20),
+	primary key(id),
+	foreign key(id) references User(id)
+	on delete cascade 
+    on update cascade 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table TeacherInfoMation(
+	id int(10) not null,
+	Birthday varchar(20),
+	Political varchar(20),
+	Hometown varchar(20),
+	Ethnic varchar(20),
+	IdentityID varchar(20),
+	AdministrativeDuty varchar(20),
+	Title varchar(20),
+	OfficeAddress varchar(20),
+	OfficePhone varchar(20),
+	mail1 varchar(20) default null,
+	mail2 varchar(20) default null,
+	mail3 varchar(20) default null,
+	TelePhone varchar(20),
+	CommunicationAddress varchar(20),
+	ResearchDirection varchar(20),
+	primary key(id),
+	foreign key(id) references User(id)
+	on delete cascade 
+    on update cascade 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table College(
+	CollegeID int not null primary key,
+	CollegeName varchar(20)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table Subject(
+	SubjectID int(10) not null auto_increment primary key,
+	SubjectName varchar(20),
+	Subjection varchar(20)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table Teacher_Subject(
+	TeacherID int(10),
+	SubjectID int(10),
+	primary key(TeacherID, SubjectID),
+	foreign key(TeacherID) references User(id)
+	on delete cascade 
+    on update cascade ,
+	foreign key(SubjectID) references Subject(SubjectID)
+	on delete cascade 
+    on update cascade
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table Degree(
+	ID int not null auto_increment,
+	TeacherID int(10),
+	Degreename varchar(20),
+	GraduationSchool varchar(20),
+	Specialty varchar(20),
+	StartTime varchar(20),
+	EndTime varchar(20),
+	SchoolLevel varchar(20),
+	HighestDegree boolean,
+	primary key(ID),
+	foreign key(TeacherID) references User(id)
+	on delete cascade 
+    on update cascade 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table WorkExperience(
+	ID int not null auto_increment,
+	TeacherID int(10),
+	StartTime varchar(20),
+	EndTime varchar(20),
+	Department varchar(20),
+	WorkSituation varchar(20),
+	primary key(ID),
+	foreign key(TeacherID) references User(id)
+	on delete cascade 
+    on update cascade 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table PartJob(
+	ID int not null auto_increment,
+	TeacherID int(10),
+	PartJobName varchar(20),
+	StartTime varchar(20),
+	EndTime varchar(20),
+	primary key(ID),
+	foreign key(TeacherID) references User(id)
+	on delete cascade 
+    on update cascade 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table Honor(
+	ID int not null auto_increment,
+	TeacherID int(10),
+	HonorName varchar(20),
+	AchieveTime varchar(20),
+	Batch varchar(20),
+	Level varchar(20),
+	primary key(ID),
+	foreign key(TeacherID) references User(id)
+	on delete cascade 
+    on update cascade 
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table Declareauthor(
+	ID int not null auto_increment,
+	PaperId int,
+	Authorname varchar(20),
+	Department varchar(20),
+	Level varchar(20),
+	primary key(ID),
+	foreign key(PaperId) references Declaretion(ID)
+	on delete cascade 
+    on update cascade
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table Declaretion(
+	ID int not null auto_increment,
+	TeacherID int(10),
+	paperID varchar(20),
+	Department varchar(50),
+	Telephone varchar(20),
+	PutTime varchar(20),
+	CName varchar(100),
+	EName varchar(100),
+	CJName varchar(100),
+	EJName varchar(100),
+	JLevel varchar(20),
+	CCName varchar(100),
+	ECName varchar(100),
+	CLevel varchar(20),
+	Volume int(11),
+	period int(11),
+	StPage varchar(20),
+	EdPage varchar(20),
+	primary key(ID),
+	foreign key(TeacherID) references User(id)
+	on delete cascade
+	on update cascade
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;

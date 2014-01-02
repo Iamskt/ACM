@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!--
+    	Charisma v1.0.0
+    	Copyright 2012 Muhammad Usman
+      	Licensed under the Apache License v2.0
+      	http://www.apache.org/licenses/LICENSE-2.0
+
+      	http://usman.it
+    	http://twitter.com/halalit_usman
+  	-->
+  	<meta charset="utf-8">
+  	<title>用户列表</title>
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  	<meta name="description" content="Charisma, a fully featured, responsive, HTML5, Bootstrap admin template.">
+  	<meta name="author" content="Muhammad Usman">
+
+  	<!-- The styles -->
+  	<link id="bs-css" href="css/bootstrap-cerulean.css" rel="stylesheet">
+  	<style type="text/css">
+  	body {
+  		padding-bottom: 40px;
+ 	}
+ 	.sidebar-nav {
+  	 	padding: 9px 0;
+ 	}
+ 	</style>
+ 	<link href="css/bootstrap-responsive.css" rel="stylesheet">
+ 	<link href="css/charisma-app.css" rel="stylesheet">
+ 	<link href="css/jquery-ui-1.8.21.custom.css" rel="stylesheet">
+ 	<link href='css/fullcalendar.css' rel='stylesheet'>
+ 	<link href='css/fullcalendar.print.css' rel='stylesheet'  media='print'>
+ 	<link href='css/chosen.css' rel='stylesheet'>
+ 	<link href='css/uniform.default.css' rel='stylesheet'>
+ 	<link href='css/colorbox.css' rel='stylesheet'>
+ 	<link href='css/jquery.cleditor.css' rel='stylesheet'>
+ 	<link href='css/jquery.noty.css' rel='stylesheet'>
+ 	<link href='css/noty_theme_default.css' rel='stylesheet'>
+ 	<link href='css/elfinder.min.css' rel='stylesheet'>
+ 	<link href='css/elfinder.theme.css' rel='stylesheet'>
+ 	<link href='css/jquery.iphone.toggle.css' rel='stylesheet'>
+ 	<link href='css/opa-icons.css' rel='stylesheet'>
+ 	<link href='css/uploadify.css' rel='stylesheet'>
+ 	<link href='css/temp.css' rel='stylesheet'>
+ 	<!-- The HTML5 shim, for IE6-8 support of HTML5 elements -->
+  	<!--[if lt IE 9]>
+  	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  	<![endif]-->
+  	<!-- The fav icon -->
+  	<link rel="shortcut icon" href="img/favicon.ico">
+  	<script src="js/jquery.js"></script>
+  	<script src="js/user.js"></script>
+  	<script src="js/page.js"></script>
+  	<script src="js/ajaxfileupload.js"></script>
+  	<script type="text/javascript">
+  	$(document).ready(function() {
+  		logout();
+  		close();
+     	var table = $("#user").dataTable({
+      		"sDom" : "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span12'i><'span12 center'p>>",
+      		"sPaginationType" : "bootstrap",
+      		"oLanguage" : {
+        		"sLengthMenu" : "_MENU_ records per page"
+      		}
+    	});
+    	Edit(table);
+    	Delete(table);
+    	addnode(table);
+    	Exportuser(table);
+    	save1(table);
+    	View(table);
+    	$.ajax({
+     	type: "post",
+      	url:  "ajax/User.action",
+      	dataType: "json",
+      	success: 
+      		function(jsondata) {
+        		var obj = $.parseJSON(jsondata);
+        		if (obj[0].status == false) {
+         			window.location.href = "login.html";
+        		} else {
+          			$("#status").text(obj[0].name);
+          			dealroot(obj[0].root);
+          			init(table, obj[0].teacher);
+        		}
+      		}
+    	}); 
+  	});
+
+	function init(table, obj) {
+		var size = obj.length;
+		var tmp = $("#user tbody");
+		for (var i = 0; i < size; i ++) {
+			var node = button();
+			table.fnAddData([
+				obj[i].salaryid,
+				obj[i].username,
+				obj[i].department,
+				node
+			]);
+			var v1 = $("#user tbody").find("tr").eq(i);
+			v1.attr("id", obj[i].id);
+		}
+	}
+	function button() {
+		var Addnode = "<button class=\"btn btn-success\">";
+		Addnode = Addnode + "<i class=\"icon-edit icon-white\">";
+		Addnode = Addnode + "</i>\nEdit\n";
+		Addnode = Addnode + "</button>";
+		Addnode = Addnode + "&nbsp&nbsp";
+		Addnode = Addnode + "<button class=\"btn btn-danger\">";
+		Addnode = Addnode + "<i class=\"icon-trash icon-white\"></i>";
+		Addnode = Addnode + "</i>\nDelete\n";
+		Addnode = Addnode + "</button>&nbsp&nbsp";
+		Addnode = Addnode + "<button class=\"btn btn-inverse\">";
+		Addnode = Addnode + "<i class=\"icon-search icon-white\">";
+		Addnode = Addnode + "</i>\nView\n";
+		Addnode = Addnode + "</button>";
+		return Addnode;
+	}
+	function addnode(obj) {
+		$("#Adduser").click(function() {
+			$("#teachername").attr("value", "");
+			$("#teacherId").attr("value", "");
+			$("#department").attr("value", "");
+			$("#myModal").modal("show");
+		});
+		$("#save").click(function() {
+			var v1 = $("#teachername").val();
+			var v2 = $("#teacherId").val();
+			var v3 = $("#department").val();
+			if (v1 == "" || v2 == "" || v3 == "") {
+				return $("#dialog3").modal("show");
+			}
+			var params = {
+				name: v1,
+				teacherId: v2,
+				department: v3
+			};
+		$.ajax({
+			type: "post",
+			url: "ajax/AddUser.action",
+			dataType: "json",
+			data: params,
+			success: 
+				function(jsondata) {
+					$("#myModal").modal("hide");
+					userinfo(obj);
+				}
+			});
+		});
+	}
+	function save1(table) {
+		$("#save1").click(function(){
+			var v1 = $("#teachername1").val();
+			var v2 = $("#teacherId1").text();
+			var v3 = $("#department1").val();
+			var params = 
+			{
+				name : v1,
+				userid : v2,
+				department : v3
+			};
+			$.ajax({
+				type: "post",
+				url:  "ajax/saveUser.action",
+				dataType: "json",
+				data : params,
+				success : 
+					function(jsonData) {
+						userinfo(table);
+						$("#myModal1").modal("hide");
+					}
+			});
+		});
+	}
+	function Edit(table) {
+		$("button[class='btn btn-success']").live("click", function() {
+			var node = $(this).parent().parent();
+			var v1 = node.attr("id");
+			var v2 = node.children("td").eq(0).html();
+			var v3 = node.children("td").eq(1).html();
+			var v4 = node.children("td").eq(2).html();
+			$("#teacherId1").text(v2);
+			$("#teachername1").attr("value", v3);
+			$("#department1").attr("value", v4);
+			$("#myModal1").modal("show");
+		})
+	}
+	function Delete(table) {
+		$("button[class='btn btn-danger']").live("click", function() {
+			var node = $(this).parent().parent();
+			var v1 = node.attr("id");
+			var params = 
+			{
+				userid : v1
+			};
+			$.ajax({
+				type: "post",
+				url:  "ajax/DelUser.action",
+				dataType: "json",
+				data : params,
+				success : 
+					function (jsonData) {
+						table.fnDeleteRow(node.index());
+						$("#dialog4").modal("show");
+					}
+			});
+		})
+	}
+	function View(table) {
+		$("button[class='btn btn-inverse']").live("click", function(){
+			var node = $(this).parent().parent();
+			var id = node.attr("id");
+			var params = 
+			{
+				pid : id
+			};
+			$.ajax({
+				type: "post",
+				url:  "ajax/Userinfo.action",
+				dataType: "json",
+				data : params,
+				success : 
+					function (jsondata) {
+						var obj = $.parseJSON(jsondata);
+						$("#myModal2").modal("show");
+						deal(obj);
+					}
+			});
+		})
+	}
+	function Exportuser(table) {
+		$("#importuser").click(function(){
+			$.ajaxFileUpload({
+				url : "ajax/ExportUser.action",
+				secureuri: false,
+				fileElementId: "fileupload",
+				dataType : "text",
+				success :
+					function (data, status) {
+					},
+				error : 
+					function (data, status, e) {
+						$("#dialog2").modal("show");
+						userinfo(table);
+					}
+			});
+		});
+	}
+	function userinfo(table) {
+		$.ajax({
+			type: "post",
+			url:  "ajax/TempUser.action",
+			dataType: "json",
+			success : 
+				function (jsonData) {
+					removeinfo(table);
+					var obj = $.parseJSON(jsonData);
+					addinfo(table, obj[0].teacher);
+				}
+		});
+	}
+	function addinfo(table, obj) {
+		var size = obj.length;
+		for (var i = 0; i < size; i ++) {
+			var node = button();
+			table.fnAddData([
+				obj[i].salaryid,
+				obj[i].username,
+				obj[i].department,
+				node
+			]);
+			var v1 = $("#user tbody").find("tr").eq(i);
+			v1.attr("id", obj[i].id);
+		}
+	}
+	function removeinfo(table) {
+		var node = $("#user tbody").find("tr");
+		for (var i = node.length-1; i >= 0; i --) {
+			var tmp = node.eq(i);
+			table.fnDeleteRow(tmp.index());
+		}
+	}
+	</script>
+</head>
+
+<body>
+	<!-- topbar starts -->
+	<div class="navbar">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".top-nav.nav-collapse,.sidebar-nav.nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</a>
+				<a class="brand" style="width: 200px" href="#">
+					<span> <font color="#D4FFAA" face="华文楷体" >人员信息管理系统</font>
+					</span>
+				</a>
+				<div class="btn-group pull-right" >
+					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#"> 
+						<i class="icon-user"></i>
+						<span class="hidden-phone" id="status"></span>
+						<span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu">
+						<li>
+							<a href="index.html">Profile</a>
+						</li>
+						<li class="divider"></li>
+						<li>
+							<a href="login.html">Logout</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- topbar ends -->
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<!-- left menu starts -->
+			<div class="span2 main-menu-span">
+				<div class="well nav-collapse sidebar-nav">
+					<ul class="nav nav-tabs nav-stacked main-menu">
+						<li class="nav-header hidden-tablet">Main</li>
+						<li>
+							<a class="ajax-link" href="index.html"> 
+								<i class="icon-home"></i>
+								<span class="hidden-tablet">个人信息</span>
+							</a>
+						</li>
+						<li>
+							<a class="ajax-link" href="Declaretion.html">
+							<i class="icon-eye-open"></i>
+							<span class="hidden-tablet">查看学术论文</span>
+							</a>
+						</li>
+						<li>
+							<a class="ajax-link" href="form.html">
+								<i class="icon-edit"></i>
+								<span class="hidden-tablet">申报学术论文</span>
+							</a>
+						</li>
+						<li>
+							<a class="ajax-link" href="SetPassword.html">
+								<i class="icon-list-alt"></i>
+								<span class="hidden-tablet">修改密码</span>
+							</a>
+						</li>
+						<li>
+							<a class="ajax-link" href="User.html" id="root1">
+								<i class="icon-list"></i>
+								<span class="hidden-tablet">用户列表</span>
+							</a>
+						</li>
+						<li>
+							<a class="ajax-link" href="AllDeclaretion.html" id="root2">
+								<i class="icon-list"></i>
+								<span class="hidden-tablet">论文列表</span>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<!--/span-->
+			<!-- left menu ends -->
+
+			<noscript>
+				<div class="alert alert-block span10">
+					<h4 class="alert-heading">Warning!</h4>
+					<p>
+					You need to have
+					<a href="http://en.wikipedia.org/wiki/JavaScript" target="_blank">JavaScript</a>
+					enabled to use this site.
+					</p>
+				</div>
+			</noscript>
+			
+			<div id="content" class="span10">
+				<div>
+					<ul class="breadcrumb">
+						<li>
+							<a href="index.html">Home</a>
+							<span class="divider">/</span>
+						</li>
+						<li>
+							<a href="#">用户列表</a>
+						</li>
+					</ul>
+				</div>
+				<div class="row-fluid sortable">
+					<div class="box span12">
+						<div class="box-header well" data-original-title>
+							<h2>
+								<i class="icon-edit"></i>
+								用户列表
+							</h2>
+							<div class="box-icon">
+								<a href="#" class="btn btn-close btn-round">
+									<i class="icon-remove"></i>
+								</a>
+							</div>
+						</div>
+						<div class="box-content">
+							<legend> <font style="font-weight: bold">&nbsp&nbsp&nbsp 用户列表列表</font>
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								<button id="Adduser" type="button" class="btn btn-info btn-setting">添加用户</button>
+								&nbsp&nbsp&nbsp
+								<input class="input-file uniform_on" id="fileupload" type="file" name="fileupload">
+								<button id="importuser" type="button" class="btn btn-info">导入用户</button>
+							</legend>
+							<table id="user" class="table table-striped table-bordered bootstrap-datatable" style="width: 700px">
+								<thead>
+									<th style="width: 100px">工资号</th>
+									<th style="width: 100px">用户名</th>
+									<th style="width: 100px">部门</th>
+									<th style="width: 200px">操作</th>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+				<!--/fluid-row-->
+
+			<hr>
+			<div class="modal hide fade" id="dialog4">
+					<div class="modal-body">
+						<p>删除成功</p>
+					</div>
+					<div class="modal-footer">
+						<a href="#" class="btn" data-dismiss="modal">确定</a>
+					</div>
+				</div>
+			<div class="modal hide fade" id="dialog2">
+					<div class="modal-body">
+						<p>导入成功</p>
+					</div>
+					<div class="modal-footer">
+						<a href="#" class="btn" data-dismiss="modal">确定</a>
+					</div>
+				</div>
+			<div class="modal hide fade" id="dialog1">
+					<div class="modal-body">
+						<p>请上传文件</p>
+					</div>
+					<div class="modal-footer">
+						<a href="#" class="btn" data-dismiss="modal">确定</a>
+					</div>
+				</div>
+			<div class="modal hide fade" id="dialog3">
+				<div class="modal-body">
+					<p>请填写完数据</p>
+				</div>
+				<div class="modal-footer">
+					<a href="#" class="btn" data-dismiss="modal">确定</a>
+				</div>
+			</div>
+			<div class="modal hide fade" id="myModal1">
+				<form class="form-horizontal">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">×</button>
+						<h3>编辑用户</h3>
+					</div>
+					<div class="modal-body">
+						<label class="control-label" for="teachername1">姓名</label>
+						<div class="controls">
+							<input id="teachername1" class="input-medium focused" />
+						</div>
+						<br>
+						<label class="control-label">教师号</label>
+						<div class="controls">
+							<span class="input-medium uneditable-input" id="teacherId1"></span>
+						</div>
+						<br>
+						<label class="control-label">部门</label>
+						<div class="controls">
+							<input id="department1" class="input-medium focused" />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button class="btn" id="save1" type="button">保存</button>
+					</div>
+				</form>
+			</div>
+			<div class="modal hide fade" id="myModal">
+				<form class="form-horizontal">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">×</button>
+						<h3>添加用户</h3>
+					</div>
+					<div class="modal-body">
+						<div class="control-group">
+							<label class="control-label">姓名</label>
+							<div class="controls">
+								<input id="teachername" class="input-medium" />
+							</div>
+							<br>
+							<label class="control-label">教师号</label>
+							<div class="controls">
+								<input class="input-medium" id="teacherId" />
+							</div>
+							<br>
+							<label class="control-label">部门</label>
+							<div class="controls">
+								<input id="department" class="input-medium" />
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button class="btn" id="save" type="button">确定</button>
+						<button type="reset" class="btn">重置</button>
+					</div>
+				</form>
+			</div>
+
+		</div>
+
+		<div class="modal1 hide fade" id="myModal2">
+			<div class="modal1-header">
+				<button id="close" type="button" class="close" data-dismiss="modal">×</button>
+				<h3>用户信息</h3>
+			</div>
+			<div class="box-content">
+				<ul class="nav nav-tabs" id="myTab">
+						<li class="active">
+							<a href="#p1">基本信息</a>
+						</li>
+						<li>
+							<a href="#p2">办公信息</a>
+						</li>
+						<li>
+							<a href="#p3">学科信息</a>
+						</li>
+						<li>
+							<a href="#p4">学位信息</a>
+						</li>
+						<li>
+							<a href="#p5">工作经历信息</a>
+						</li>
+						<li>
+							<a href="#p6">兼职经历信息</a>
+						</li>
+						<li>
+							<a href="#p7">学术荣誉信息</a>
+						</li>
+				</ul>
+				<div id="myTabContent" class="tab-content">
+					<div class="tab-pane active" id="p1">
+						<form class="form-horizontal">
+							<fieldset>
+								<div class="control-group">
+									<label class="control-label">姓名</label>
+									<div class="controls">
+										<span id="teachername2" class="input-medium uneditable-input"></span>
+									</div>
+									<br>
+									<label class="control-label">教师号</label>
+									<div class="controls">
+										<span class="input-medium uneditable-input" id="teacherId2"></span>
+									</div>
+									<br>
+									<label class="control-label">身份证号</label>
+									<div class="controls">
+										<span class="input-medium uneditable-input" id="shenfenzheng" type="text"/>
+									</div>
+								</div>
+							</fieldset>
+							<fieldset>
+								<div class="control-group">
+									<label class="control-label" for="birthday">生日</label>
+									<div class="controls">
+										<span type="text" class="input-medium uneditable-input" id="birthday" />
+									</div>
+								</div>
+							</fieldset>
+							<fieldset>
+								<label class="control-label">政治面貌</label>
+								<div class="controls">
+									<span class="input-medium uneditable-input" id="zhengzhi" type="text"/>
+								</div>
+								<br>
+								<label class="control-label">名族</label>
+								<div class="controls">
+									<span class="input-medium uneditable-input" id="mingzu" type="text"/>
+								</div>
+							</fieldset>
+							<fieldset>
+								<br>
+								<div class="control-group">
+									<label class="control-label" for="jiguan">籍贯&nbsp</label>
+									<div class="controls">
+										<span class="input-medium uneditable-input" id="jiguan" type="text"/>
+									</div>
+								</div>
+							</fieldset>
+						</form>
+					</div>
+					<div class="tab-pane" id="p2">
+						<form class="form-horizontal">
+							<fieldset>
+								<label class="control-label">行政职务</label>
+								<div class="controls">
+									<span class="input-medium uneditable-input" id="duty" type="text"/>
+								</div>
+								<br>
+								<label class="control-label">职称</label>
+								<div class="controls">
+									<span class="input-medium uneditable-input" id="title" type="text"/>
+								</div>
+								<br>
+								<label class="control-label">学院</label>
+								<div class="controls">
+									<span class="input-medium uneditable-input" id="institute" />
+								</div>
+								<br>
+								<label class="control-label">部门</label>
+								<div class="controls">
+									<span class="input-medium uneditable-input" id="department4" />
+								</div>
+								<br>
+								<label class="control-label">通信地址</label>
+								<div class="controls">
+									<span class="input-large uneditable-input" id="telAdd" />
+								</div>
+								<br>
+								<label class="control-label">研究方向</label>
+								<div class="controls">
+									<span class="input-large uneditable-input" id="area" />
+								</div>
+								<br>
+								<label class="control-label">办公地址</label>
+								<div class="controls">
+									<span class="input-large uneditable-input" id="workAdd" />
+								</div>
+								<br>
+								<label class="control-label">办公电话</label>
+								<div class="controls">
+									<span class="input-large uneditable-input" id="phone" />
+								</div>
+								<br>
+								<label class="control-label">移动电话</label>
+									<div class="controls">
+										<span class="input-large uneditable-input" id="mobile" />
+									</div>
+							</fieldset>
+							<fieldset>
+								<div class="control-group">
+									<br>
+									<label class="control-label">邮箱</label>
+									<div class="controls">
+										<table id="mail" style="width: 250px" border="0">
+											<tbody></tbody>
+										</table>
+									</div>
+								</div>
+							</fieldset>
+						</form>
+					</div>
+					<div class="tab-pane" id="p3">
+						<div class="content">
+							<fieldset>
+								<legend>
+									<font style="font-weight: bold">&nbsp&nbsp&nbsp 隶属学科信息表 &nbsp</font>
+								</legend>
+								<table id="table1" class="table table-striped table-bordered" style="width: 600px">
+									<thead>
+										<th>学科名称</th>
+										<th>学科等级</th>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</fieldset>
+						</div>
+					</div>
+					<div class="tab-pane" id="p4">
+						<div class="content">
+							<fieldset>
+								<legend>
+									<font style="font-weight: bold">&nbsp&nbsp&nbsp 学位经历表&nbsp</font>
+								</legend>
+								<table id="table2" class="table table-striped table-bordered" style="width: 800px">
+									<thead>
+										<th>学位</th>
+										<th style="width: 100px">攻读时间</th>
+										<th style="width: 100px">结束时间</th>
+										<th>毕业学校</th>
+										<th>高校层次</th>
+										<th>专业</th>
+										<th style="width: 100px">是否最高学位</th>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</fieldset>
+						</div>
+					</div>
+					<div class="tab-pane" id="p5">
+						<div class="content">
+							<fieldset>
+								<legend>
+									<font style="font-weight: bold">&nbsp&nbsp&nbsp 工作经历表&nbsp</font>
+								</legend>
+								<table id="table3" class="table table-striped table-bordered" style="width: 850px">
+									<thead>
+										<th>工作单位</th>
+										<th>部门</th>
+										<th>开始时间</th>
+										<th>结束时间</th>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</fieldset>
+						</div>
+					</div>
+					<div class="tab-pane" id="p6">
+						<div class="content">
+							<fieldset>
+								<legend>
+									<font style="font-weight: bold">&nbsp&nbsp&nbsp 兼职经历表&nbsp</font>
+								</legend>
+								<table id="table4" class="table table-striped table-bordered" style="width: 600px">
+									<thead>
+										<th>兼职名称</th>
+										<th>开始时间</th>
+										<th>结束时间</th>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</fieldset>
+						</div>
+					</div>
+					<div class="tab-pane" id="p7">
+						<div class="content">
+							<fieldset>
+								<legend>
+									<font style="font-weight: bold">&nbsp&nbsp&nbsp 学术荣誉称号&nbsp</font>
+								</legend>
+								<table id="table5" class="table table-striped table-bordered" style="width: 800px">
+									<thead>
+										<th>称号名</th>
+										<th>获得时间</th>
+										<th>批次</th>
+										<th>级别</th>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</fieldset>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>	
+	<!-- external javascript
+				================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+
+		<!-- jQuery -->
+		<!-- jQuery UI -->
+	<script src="js/jquery-ui-1.8.21.custom.min.js"></script>
+		<!-- transition / effect library -->
+	<script src="js/bootstrap-transition.js"></script>
+									<!-- alert enhancer library -->
+	<script src="js/bootstrap-alert.js"></script>
+									<!-- modal / dialog library -->
+	<script src="js/bootstrap-modal.js"></script>
+									<!-- custom dropdown library -->
+	<script src="js/bootstrap-dropdown.js"></script>
+									<!-- scrolspy library -->
+	<script src="js/bootstrap-scrollspy.js"></script>
+									<!-- library for creating tabs -->
+	<script src="js/bootstrap-tab.js"></script>
+									<!-- library for advanced tooltip -->
+	<script src="js/bootstrap-tooltip.js"></script>
+									<!-- popover effect library -->
+	<script src="js/bootstrap-popover.js"></script>
+									<!-- button enhancer library -->
+	<script src="js/bootstrap-button.js"></script>
+									<!-- accordion library (optional, not used in demo) -->
+	<script src="js/bootstrap-collapse.js"></script>
+									<!-- carousel slideshow library (optional, not used in demo) -->
+	<script src="js/bootstrap-carousel.js"></script>
+									<!-- autocomplete library -->
+	<script src="js/bootstrap-typeahead.js"></script>
+									<!-- tour library -->
+	<script src="js/bootstrap-tour.js"></script>
+									<!-- library for cookie management -->
+	<script src="js/jquery.cookie.js"></script>
+									<!-- calander plugin -->
+	<script src='js/fullcalendar.min.js'></script>
+									<!-- data table plugin -->
+	<script src='js/jquery.dataTables.min.js'></script>
+
+								<!-- chart libraries start -->			
+	<script src="js/excanvas.js"></script>
+	<script src="js/jquery.flot.min.js"></script>
+	<script src="js/jquery.flot.pie.min.js"></script>
+	<script src="js/jquery.flot.stack.js"></script>
+	<script src="js/jquery.flot.resize.min.js"></script>
+									<!-- chart libraries end -->
+
+									<!-- select or dropdown enhancer -->
+	<script src="js/jquery.chosen.min.js"></script>
+									<!-- checkbox, radio, and file input styler -->
+	<script src="js/jquery.uniform.min.js"></script>
+									<!-- plugin for gallery image view -->
+	<script src="js/jquery.colorbox.min.js"></script>
+									<!-- rich text editor library -->
+	<script src="js/jquery.cleditor.min.js"></script>
+									<!-- notification plugin -->
+	<script src="js/jquery.noty.js"></script>
+									<!-- file manager library -->
+	<script src="js/jquery.elfinder.min.js"></script>
+									<!-- star rating plugin -->
+	<script src="js/jquery.raty.min.js"></script>
+									<!-- for iOS style toggle switch -->
+	<script src="js/jquery.iphone.toggle.js"></script>
+									<!-- autogrowing textarea plugin -->
+	<script src="js/jquery.autogrow-textarea.js"></script>
+									<!-- multiple file upload plugin -->
+	<script src="js/jquery.uploadify-3.1.min.js"></script>
+									<!-- history.js for cross-browser state change on ajax -->
+	<script src="js/jquery.history.js"></script>
+									<!-- application script for Charisma demo -->
+	<script src="js/charisma.js"></script>
+	</body>
+</html>

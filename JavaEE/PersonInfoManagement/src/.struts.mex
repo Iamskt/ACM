@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Struts2Diagram version="2.0">
+  <package name="Action" location="26,17" size="668,712">
+    <action name="login" location="29,37" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="Verify" location="203,37" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="logout" location="27,144" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="setPassword" location="201,143" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="personinfo" location="26,251" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="Officeinfo" location="201,249" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="Workexp" location="26,355" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="person" location="376,89" size="150,62">
+      <result name="success" />
+      <result name="Teacherinfomation" />
+    </action>
+    <action name="Declaretion" location="200,354" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="form" location="376,36" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="xueke" location="26,303" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="xuewei" location="200,301" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="delwuewei" location="28,90" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="Delworkexp" location="202,89" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="partjob" location="27,199" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="delpartjob" location="201,197" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="honor" location="374,169" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="delhonor" location="372,229" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="delxueke" location="370,338" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="AllDeclaretion" location="371,284" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="User" location="26,408" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="AddUser" location="26,461" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="ExportUser" location="200,406" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="DelUser" location="199,460" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="DelDeclaretion" location="369,397" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="saveUser" location="367,454" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="TempUser" location="23,513" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="Userinfo" location="195,511" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="Exportform" location="362,509" size="150,41">
+      <result name="success" />
+    </action>
+    <action name="gainDeclaretion" location="331,571" size="150,40">
+      <result name="success" />
+    </action>
+  </package>
+</Struts2Diagram>
+

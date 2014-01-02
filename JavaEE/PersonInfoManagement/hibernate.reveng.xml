@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd" >
+
+<hibernate-reverse-engineering>
+	<table name="user" catalog="personinfomanagement">
+		<primary-key>
+			<generator class="increment"></generator>
+		</primary-key>
+	</table>
+	<table name="workexperience" catalog="personinfomanagement">
+		<primary-key>
+			<generator class="native"></generator>
+		</primary-key>
+	</table>
+	<table name="teacher_subject" catalog="personinfomanagement"></table>
+	<table name="adminuser" catalog="personinfomanagement"></table>
+	<table name="degree" catalog="personinfomanagement">
+		<primary-key>
+			<generator class="native"></generator>
+		</primary-key>
+	</table>
+	<table name="honor" catalog="personinfomanagement">
+		<primary-key>
+			<generator class="native"></generator>
+		</primary-key>
+	</table>
+	<table name="partjob" catalog="personinfomanagement">
+		<primary-key>
+			<generator class="native"></generator>
+		</primary-key>
+	</table>
+	<table name="subject" catalog="personinfomanagement"></table>
+	<table name="teacher" catalog="personinfomanagement"></table>
+	<table name="systemuser" catalog="personinfomanagement"></table>
+	<table name="teacherinfomation" catalog="personinfomanagement"></table>
+	<table name="college" catalog="personinfomanagement"></table>
+	<table name="declaretion" catalog="personinfomanagement">
+		<primary-key>
+			<generator class="native"></generator>
+		</primary-key>
+	</table>
+	<table name="declareauthor" catalog="personinfomanagement"></table>
+</hibernate-reverse-engineering>
